@@ -110,9 +110,11 @@ function getImagesWithoutLinkToDescription() {
 			&& ! /\/(?:OggHandler|timeline)\//.test( $this.attr( 'src' ) );
 	})
 	.each( function () {
-		var imgName = $( this ).attr( 'src' )
+		var imgName = decodeURIComponent( $( this ).attr( 'src' )
 			.replace( /^.+?\/\d+px-/, '' )
-			.replace( /\.svg.png$/g, '.svg' );
+			.replace( /\.svg.png$/g, '.svg' )
+			.replace( /_/g, ' ' ) );
+
 		images[ 'File:' + imgName ] = 'unknown';
 	} );
 	checkCategories( images );
