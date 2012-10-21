@@ -12,8 +12,8 @@ var commonsApi, $content;
 	
 function showInfo( images ) {
 	var colors = {
-			valid: '#3f3',
-			missing: '#f33',
+			valid: '#060',
+			missing: '#A00',
 			unknown: '#0645AD'
 		},
 		$list = $( '<ol>' ),
@@ -34,6 +34,7 @@ function showInfo( images ) {
 	} );
 
 	$content.prepend( $result.append( $list ) );
+	$.removeSpinner('check-cats');
 }
 	
 function checkCategories( images ) {
@@ -66,6 +67,8 @@ function checkCategories( images ) {
 				}
 			}
 			showInfo( images );
+		} ).fail(function(){
+			$.removeSpinner('check-cats');
 		} );
 	};
 	
@@ -93,10 +96,13 @@ function checkCategories( images ) {
 			}
 		}
 		testImagesAgainstWhiteList( cats );
+	} ).fail(function(){
+		$.removeSpinner('check-cats');
 	} );
 }
 
 function getImagesWithoutLinkToDescription() {
+	$('#firstHeading').injectSpinner('check-cats');
 	var images = {};
 	$content.find( 'img' ).filter( function () {
 		var $this = $( this );
@@ -124,7 +130,7 @@ function run(){
 	) )
 	.click( function(e){
 		e.preventDefault();
-		mw.loader.using( ['mediawiki.api'], getImagesWithoutLinkToDescription );
+		mw.loader.using( ['mediawiki.api', 'jquery.spinner'], getImagesWithoutLinkToDescription );
 	} );
 }
 
