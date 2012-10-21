@@ -26,7 +26,7 @@ function showInfo( images ) {
 		$list.append(
 			$( '<li>' ).append(
 				$( '<a>' )
-					.attr( 'href', mw.util.wikiGetlink( 'Image:' + img ) )
+					.attr( 'href', mw.util.wikiGetlink( img ) )
 					.css( 'color', colors[ images[ img ] ] )
 					.text( img )
 			)
@@ -109,8 +109,8 @@ function getImagesWithoutLinkToDescription() {
 }
 
 // TODO:
-// - Auto check (partially done); or
-// - Auto fix ;-)
+// - Improve auto checking; or
+// - Implement auto fix ;-)
 
 function run(){
 	$content = $( '#mw-content-text' );
