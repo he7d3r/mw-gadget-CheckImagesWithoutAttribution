@@ -107,11 +107,11 @@ function getImagesWithoutLinkToDescription() {
 	$content.find( 'img' ).filter( function () {
 		var $this = $( this );
 		return !$this.parent().is( 'a.image' )
-			&& ! /\/(?:OggHandler|timeline)\//.test( $this.attr( 'src' ) );
+			&& ! /\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) );
 	})
 	.each( function () {
 		var imgName = decodeURIComponent( $( this ).attr( 'src' )
-			.replace( /^.+?\/\d+px-/, '' )
+			.replace( /^.+?\/(?:\d+px-|commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/)/, '' )
 			.replace( /\.svg.png$/g, '.svg' )
 			.replace( /_/g, ' ' ) );
 
