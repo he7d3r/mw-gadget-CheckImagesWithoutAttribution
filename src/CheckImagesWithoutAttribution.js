@@ -48,14 +48,18 @@ function checkCategories( images ) {
 			indexpageids: true,
 			titles: Object.keys( images ).join( '|' )
 		} ).done( function( data ){
-			var i, j, img;
+			var i, j, img, imgCats,
+				map = function(c){
+					return c.title;
+				};
 			for( i = 0; i < data.query.pageids.length; i += 1 ){
 				img = data.query.pages[ data.query.pageids[i] ];
 				if ( img.missing === '' ){
 					images[ img.title ] = 'missing';
 				} else {
-					for( j = 0; j < img.categories.length; j += 1 ){
-						if( $.inArray( img.categories[j], cats ) !== -1 ){
+					imgCats = $.map( img.categories, map );
+					for( j = 0; j < imgCats.length; j += 1 ){
+						if( $.inArray( imgCats[j], cats ) !== -1 ){
 							images[ img.title ] = 'valid';
 						}
 					}
