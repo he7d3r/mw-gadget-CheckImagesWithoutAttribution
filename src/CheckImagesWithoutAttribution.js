@@ -31,7 +31,7 @@ function getList( images ) {
 		$list.append(
 			$( '<li>' ).append(
 				$( '<a>' )
-					.attr( 'href', mw.util.wikiGetlink( img ) )
+					.attr( 'href', mw.util.wikiGetlink( 'commons:' + img ) )
 					.css( 'color', colors[ images[ img ] ] )
 					.text( img )
 			)
