@@ -9,18 +9,23 @@
 'use strict';
 
 var commonsApi, $content;
-	
-function showInfo( images ) {
+
+function showInfo( info ) {
+	var $result = $( '<div>' ).css( {
+			'border': '1px solid gray',
+			'padding': '0.5em'
+		} );
+	$content.prepend( $result.append( info ) );
+	$.removeSpinner( 'check-cats' );	
+}
+
+function getList( images ) {
 	var colors = {
 			valid: '#060',
 			missing: '#A00',
 			unknown: '#0645AD'
 		},
-		$list = $( '<ol>' ),
-		$result = $( '<div>' ).css( {
-			'border': '1px solid gray',
-			'padding': '0.5em'
-		} );
+		$list = $( '<ol>' );
 	
 	$.each( images, function ( img ) {
 		$list.append(
@@ -32,9 +37,7 @@ function showInfo( images ) {
 			)
 		);
 	} );
-
-	$content.prepend( $result.append( $list ) );
-	$.removeSpinner('check-cats');
+	return $list;
 }
 	
 function checkCategories( images ) {
@@ -67,9 +70,9 @@ function checkCategories( images ) {
 					}
 				}
 			}
-			showInfo( images );
+			showInfo( getList( images ) );
 		} ).fail(function(){
-			$.removeSpinner('check-cats');
+			showInfo( 'Ops! Não foi possível obter a lista de categorias das imagens do Wikimedia Commons' );
 		} );
 	};
 	
@@ -98,7 +101,7 @@ function checkCategories( images ) {
 		}
 		testImagesAgainstWhiteList( cats );
 	} ).fail(function(){
-		$.removeSpinner('check-cats');
+		showInfo( 'Ops! Não foi possível obter a lista de categorias de domínio público do Wikimedia Commons' );
 	} );
 }
 
@@ -119,7 +122,11 @@ function getImagesWithoutLinkToDescription() {
 
 		images[ 'File:' + imgName ] = 'unknown';
 	} );
-	checkCategories( images );
+	if ( $.isEmptyObject( images ) ){
+		showInfo( 'Não há imagens nesta página sem links para sua página de descrição.' );
+	} else {
+		checkCategories( images );
+	}
 }
 
 // TODO:
