@@ -49,11 +49,12 @@ function checkCategories( images ) {
 			indexpageids: true,
 			titles: Object.keys( images ).join( '|' )
 		} ).done( function( data ){
-			var i, j, img, imgCats,
+			var i, j, img, imgCats, num,
 				map = function(c){
 					return c.title;
 				};
-			for( i = 0; i < data.query.pageids.length; i += 1 ){
+			num = (data.query && data.query.pageids && data.query.pageids.length) || 0;
+			for( i = 0; i < num; i += 1 ){
 				img = data.query.pages[ data.query.pageids[i] ];
 				if ( img.missing === '' ){
 					images[ img.title ] = 'missing';
