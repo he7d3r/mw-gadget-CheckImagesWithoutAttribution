@@ -87,7 +87,7 @@ function checkCategories( images ) {
 		list: 'categorymembers',
 		cmtitle: 'Category:Public domain',
 		cmprop: 'title',
-		cmnamespace: 14,
+		cmtype: 'subcat',
 		cmlimit: 500
 	} ).done( function( data ){
 		var i, cats = [];
