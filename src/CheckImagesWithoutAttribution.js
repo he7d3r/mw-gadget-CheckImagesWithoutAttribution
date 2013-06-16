@@ -11,12 +11,16 @@
 var commonsApi, $content;
 
 function showInfo( info ) {
-	var $result = $( '<div>' ).css( {
+	var $result = $( '#img-checker-info' ).empty();
+	if( !$( '#img-checker-info' ).length ){
+		$result = $( '<div id="img-checker-info">' ).css( {
 			'border': '1px solid gray',
 			'padding': '0.5em'
 		} );
-	$content.prepend( $result.append( info ) );
-	$.removeSpinner( 'check-cats' );	
+		$content.prepend( $result );
+	}
+	$result.append( info );
+	$.removeSpinner( 'check-cats' );
 }
 
 function getList( images ) {
@@ -41,39 +45,49 @@ function getList( images ) {
 }
 	
 function checkCategories( images ) {
-	var whiteListedCats = [
+	var cats = [],
+	imgList = Object.keys( images ),
+	whiteListedCats = [
 		'Category:CC-SA-1.0', 'Category:Public domain'
 	],
-	testImagesAgainstWhiteList = function( cats ){
+	testImagesAgainstWhiteList = function(){
+		var batchSize = 200,
 		// Get the categories of each image to look for a license which allows usage without attribution
-		commonsApi.get( {
-			prop: 'categories',
-			cllimit: 500,
-			indexpageids: true,
-			titles: Object.keys( images ).join( '|' )
-		} ).done( function( data ){
-			var i, j, img, imgCats, num,
-				map = function(c){
-					return c.title;
-				};
-			num = (data.query && data.query.pageids && data.query.pageids.length) || 0;
-			for( i = 0; i < num; i += 1 ){
-				img = data.query.pages[ data.query.pageids[i] ];
-				if ( img.missing === '' ){
-					images[ img.title ] = 'missing';
-				} else {
-					imgCats = $.map( img.categories, map );
-					for( j = 0; j < imgCats.length; j += 1 ){
-						if( $.inArray( imgCats[j], cats ) !== -1 ){
-							images[ img.title ] = 'valid';
+		getCatsForPages = function( pos ){
+			commonsApi.get( {
+				prop: 'categories',
+				cllimit: 500,
+				indexpageids: true,
+				titles: imgList.slice( pos, pos + batchSize ).join('|')
+			} ).done( function( data ){
+				var i, j, img, imgCats, num,
+					map = function(c){
+						return c.title;
+					};
+				num = (data.query && data.query.pageids && data.query.pageids.length) || 0;
+				for( i = 0; i < num; i += 1 ){
+					img = data.query.pages[ data.query.pageids[i] ];
+					if ( img.missing === '' ){
+						images[ img.title ] = 'missing';
+					} else {
+						imgCats = $.map( img.categories, map );
+						for( j = 0; j < imgCats.length; j += 1 ){
+							if( $.inArray( imgCats[j], cats ) !== -1 ){
+								images[ img.title ] = 'valid';
+							}
 						}
 					}
 				}
-			}
-			showInfo( getList( images ) );
-		} ).fail(function(){
-			showInfo( 'Ops! Não foi possível obter a lista de categorias das imagens do Wikimedia Commons' );
-		} );
+				if( pos + batchSize < imgList.length ){
+					getCatsForPages( pos + batchSize );
+				} else {
+					showInfo( getList( images ) );	
+				}
+			} ).fail( function(){
+				showInfo( 'Ops! Não foi possível obter a lista de categorias das imagens do Wikimedia Commons' );
+			} );
+		};
+		getCatsForPages( 0 );
 	};
 	
 	commonsApi = new mw.Api( {
@@ -90,7 +104,7 @@ function checkCategories( images ) {
 		cmtype: 'subcat',
 		cmlimit: 500
 	} ).done( function( data ){
-		var i, cats = [];
+		var i;
 		for( i = 0; i < data.query.categorymembers.length; i += 1 ){
 			cats.push( data.query.categorymembers[i].title );
 		}
@@ -99,7 +113,7 @@ function checkCategories( images ) {
 				cats.push( whiteListedCats[i] );
 			}
 		}
-		testImagesAgainstWhiteList( cats );
+		testImagesAgainstWhiteList();
 	} ).fail(function(){
 		showInfo( 'Ops! Não foi possível obter a lista de categorias de domínio público do Wikimedia Commons' );
 	} );
@@ -119,7 +133,6 @@ function getImagesWithoutLinkToDescription() {
 			.replace( /^.+?\d+px-/, '' )
 			.replace( /\.svg.png$/g, '.svg' )
 			.replace( /_/g, ' ' ) );
-
 		images[ 'File:' + imgName ] = 'unknown';
 	} );
 	if ( $.isEmptyObject( images ) ){
