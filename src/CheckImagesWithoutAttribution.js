@@ -124,7 +124,7 @@ function getImagesWithoutLinkToDescription() {
 	var images = {};
 	$content.find( 'img' ).filter( function () {
 		var $this = $( this );
-		return !$this.parent().is( 'a.image' )
+		return !$this.parent().is( 'a' )
 			&& ! /\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) );
 	})
 	.each( function () {
