@@ -51,7 +51,7 @@ function checkCategories( images ) {
 		'Category:CC-SA-1.0', 'Category:Public domain'
 	],
 	testImagesAgainstWhiteList = function(){
-		var batchSize = 200,
+		var batchSize = 50,
 		// Get the categories of each image to look for a license which allows usage without attribution
 		getCatsForPages = function( pos ){
 			commonsApi.get( {
