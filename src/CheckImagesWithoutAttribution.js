@@ -45,11 +45,12 @@ function getList( images ) {
 }
 	
 function checkCategories( images ) {
-	var cats = [],
-	imgList = Object.keys( images ),
-	whiteListedCats = [
-		'Category:CC-SA-1.0', 'Category:Public domain'
+	var imgList = Object.keys( images ),
+	cats = [
+		'Category:Public domain', 'Category:CC-SA-1.0'
 	],
+	curPos = 0,
+	catsInTopLevel = cats.length,
 	testImagesAgainstWhiteList = function(){
 		var batchSize = 50, // This is the current API limit
 		// Get the categories of each image to look for a license which allows usage without attribution
@@ -88,35 +89,45 @@ function checkCategories( images ) {
 			} );
 		};
 		getCatsForPages( 0 );
+	},
+	getSubCats = function( superCat ){
+		mw.log( 'Getting subcats of ' + superCat + ' (' + curPos + ' of ' + catsInTopLevel + ')');
+		commonsApi.get( {
+			list: 'categorymembers',
+			cmtitle: superCat,
+			cmprop: 'title',
+			cmtype: 'subcat',
+			cmlimit: 500
+		} ).done( function( data ){
+			var i, cat;
+			for( i = 0; i < data.query.categorymembers.length; i += 1 ){
+				cat = data.query.categorymembers[i].title;
+				if ( $.inArray( cat, cats ) === -1 ){
+					cats.push( cat );
+				}
+			}
+			// Do only one level deep recursive calls
+			if( curPos === 0 ){
+				catsInTopLevel = cats.length;
+			}
+			curPos += 1;
+			if( curPos < catsInTopLevel ){
+				getSubCats( cats[ curPos ] );
+			} else {
+				mw.log( 'The list is complete:', cats );
+				testImagesAgainstWhiteList();
+			}
+		} ).fail(function(){
+			showInfo( 'Ops! Não foi possível obter a lista de categorias de domínio público do Wikimedia Commons' );
+		} );
 	};
-	
 	commonsApi = new mw.Api( {
 		ajax: {
 			url: '//commons.wikimedia.org/w/api.php',
 			dataType: 'jsonp'
 		}
 	} );
-	
-	commonsApi.get( {
-		list: 'categorymembers',
-		cmtitle: 'Category:Public domain',
-		cmprop: 'title',
-		cmtype: 'subcat',
-		cmlimit: 500
-	} ).done( function( data ){
-		var i;
-		for( i = 0; i < data.query.categorymembers.length; i += 1 ){
-			cats.push( data.query.categorymembers[i].title );
-		}
-		for( i = 0; i < whiteListedCats.length; i += 1 ){
-			if ( $.inArray( whiteListedCats[i], cats ) !== -1 ){
-				cats.push( whiteListedCats[i] );
-			}
-		}
-		testImagesAgainstWhiteList();
-	} ).fail(function(){
-		showInfo( 'Ops! Não foi possível obter a lista de categorias de domínio público do Wikimedia Commons' );
-	} );
+	getSubCats( cats[ curPos ] );
 }
 
 function getImagesWithoutLinkToDescription() {
