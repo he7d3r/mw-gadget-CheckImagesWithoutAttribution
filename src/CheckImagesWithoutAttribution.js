@@ -3,7 +3,7 @@
  * @author: [[User:Helder.wiki]]
  * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/CheckImagesWithoutAttribution.js]] ([[File:User:Helder.wiki/Tools/CheckImagesWithoutAttribution.js]])
  */
-/*jslint browser: true, white: true, todo: true, regexp: true */
+/*jshint browser: true, camelcase: true, curly: true, eqeqeq: true, immed: true, latedef: true, newcap: true, noarg: true, noempty: true, nonew: true, quotmark: true, undef: true, unused: true, strict: true, trailing: true, maxlen: 130, evil: true, onevar: true, laxbreak: true */
 /*global jQuery, mediaWiki */
 ( function ( mw, $ ) {
 'use strict';
@@ -82,7 +82,7 @@ function checkCategories( images ) {
 				if( pos + batchSize < imgList.length ){
 					getCatsForPages( pos + batchSize );
 				} else {
-					showInfo( getList( images ) );	
+					showInfo( getList( images ) );
 				}
 			} ).fail( function(){
 				showInfo( 'Ops! Não foi possível obter a lista de categorias das imagens do Wikimedia Commons' );
@@ -134,9 +134,11 @@ function getImagesWithoutLinkToDescription() {
 	$('#firstHeading').injectSpinner('check-cats');
 	var images = {};
 	$content.find( 'img' ).filter( function () {
-		var $this = $( this );
-		return !$this.parent().is( 'a' )
-			&& ! /\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) );
+		var $this = $( this ),
+			href = $( this ).parent().attr('href');
+		return !( href && href.indexOf( mw.util.wikiGetlink( mw.config.get( 'wgFormattedNamespaces' )[6] + ':' ) ) === 0 )
+			&& ! /\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) )
+			&& ! $this.hasClass( 'tool-button' );
 	})
 	.each( function () {
 		var imgName = decodeURIComponent( $( this ).attr( 'src' )
