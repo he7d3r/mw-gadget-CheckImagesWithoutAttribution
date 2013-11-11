@@ -35,7 +35,7 @@ function getList( images ) {
 		$list.append(
 			$( '<li>' ).append(
 				$( '<a>' )
-					.attr( 'href', mw.util.wikiGetlink( 'commons:' + img ) )
+					.attr( 'href', mw.util.getUrl( 'commons:' + img ) )
 					.css( 'color', colors[ images[ img ] ] )
 					.text( img )
 			)
@@ -136,7 +136,7 @@ function getImagesWithoutLinkToDescription() {
 	$content.find( 'img' ).filter( function () {
 		var $this = $( this ),
 			href = $( this ).parent().attr('href');
-		return !( href && href.indexOf( mw.util.wikiGetlink( mw.config.get( 'wgFormattedNamespaces' )[6] + ':' ) ) === 0 )
+		return !( href && href.indexOf( mw.util.getUrl( mw.config.get( 'wgFormattedNamespaces' )[6] + ':' ) ) === 0 )
 			&& ! /\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) )
 			&& ! $this.hasClass( 'tool-button' );
 	})
