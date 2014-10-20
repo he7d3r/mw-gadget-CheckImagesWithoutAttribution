@@ -135,9 +135,9 @@
 			var $this = $( this ),
 				href = $( this ).parent().attr('href');
 			return !( href && href.indexOf( mw.util.getUrl( mw.config.get( 'wgFormattedNamespaces' )[6] + ':' ) ) === 0 )
-				&& !/\/(?:OggHandler|timeline|magnify-clip\.png)/.test( $this.attr( 'src' ) )
+				&& !/\/(?:OggHandler|timeline|(?:magnify-clip|fileicon-ogg)\.png)/.test( $this.attr( 'src' ) )
 				&& !$this.hasClass( 'tool-button' );
-		})
+		} )
 		.each( function () {
 			var imgName = decodeURIComponent( $( this ).attr( 'src' )
 				.replace( /^.+?\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\//, '' )
