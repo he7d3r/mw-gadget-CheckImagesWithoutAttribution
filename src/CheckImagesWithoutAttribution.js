@@ -1,5 +1,6 @@
 /**
  * Check images without a link to its description
+ *
  * @author: Helder (https://github.com/he7d3r)
  * @license: CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0/>
  */
@@ -12,8 +13,8 @@
 		var $result = $( '#img-checker-info' ).empty();
 		if ( !$( '#img-checker-info' ).length ) {
 			$result = $( '<div id="img-checker-info">' ).css( {
-				'border': '1px solid gray',
-				'padding': '0.5em'
+				border: '1px solid gray',
+				padding: '0.5em'
 			} );
 			$content.prepend( $result );
 		}
@@ -57,21 +58,21 @@
 					prop: 'categories',
 					cllimit: 500,
 					indexpageids: true,
-					titles: imgList.slice( pos, pos + batchSize ).join('|')
+					titles: imgList.slice( pos, pos + batchSize ).join( '|' )
 				} ).done( function ( data ) {
 					var i, j, img, imgCats, num,
-						map = function (c) {
+						map = function ( c ) {
 							return c.title;
 						};
-					num = (data.query && data.query.pageids && data.query.pageids.length) || 0;
+					num = ( data.query && data.query.pageids && data.query.pageids.length ) || 0;
 					for ( i = 0; i < num; i += 1 ) {
-						img = data.query.pages[ data.query.pageids[i] ];
+						img = data.query.pages[ data.query.pageids[ i ] ];
 						if ( img.missing === '' ) {
 							images[ img.title ] = 'missing';
 						} else {
 							imgCats = $.map( img.categories, map );
 							for ( j = 0; j < imgCats.length; j += 1 ) {
-								if ( $.inArray( imgCats[j], cats ) !== -1 ) {
+								if ( $.inArray( imgCats[ j ], cats ) !== -1 ) {
 									images[ img.title ] = 'valid';
 								}
 							}
@@ -89,7 +90,7 @@
 			getCatsForPages( 0 );
 		},
 		getSubCats = function ( superCat ) {
-			mw.log( 'Getting subcats of ' + superCat + ' (' + curPos + ' of ' + catsInTopLevel + ')');
+			mw.log( 'Getting subcats of ' + superCat + ' (' + curPos + ' of ' + catsInTopLevel + ')' );
 			commonsApi.get( {
 				list: 'categorymembers',
 				cmtitle: superCat,
@@ -99,7 +100,7 @@
 			} ).done( function ( data ) {
 				var i, cat;
 				for ( i = 0; i < data.query.categorymembers.length; i += 1 ) {
-					cat = data.query.categorymembers[i].title;
+					cat = data.query.categorymembers[ i ].title;
 					if ( $.inArray( cat, cats ) === -1 ) {
 						cats.push( cat );
 					}
@@ -115,7 +116,7 @@
 					mw.log( 'The list is complete:', cats );
 					testImagesAgainstWhiteList();
 				}
-			} ).fail(function () {
+			} ).fail( function () {
 				showInfo( 'Ops! Não foi possível obter a lista de categorias de domínio público do Wikimedia Commons' );
 			} );
 		};
@@ -129,12 +130,12 @@
 	}
 
 	function getImagesWithoutLinkToDescription() {
-		$('#firstHeading').injectSpinner('check-cats');
+		$( '#firstHeading' ).injectSpinner( 'check-cats' );
 		var images = {};
 		$content.find( 'img' ).filter( function () {
 			var $this = $( this ),
-				href = $( this ).parent().attr('href');
-			return !( href && href.indexOf( mw.util.getUrl( mw.config.get( 'wgFormattedNamespaces' )[6] + ':' ) ) === 0 )
+				href = $( this ).parent().attr( 'href' );
+			return !( href && href.indexOf( mw.util.getUrl( mw.config.get( 'wgFormattedNamespaces' )[ 6 ] + ':' ) ) === 0 )
 				&& !/\/(?:OggHandler|timeline|(?:magnify-clip|fileicon-ogg)\.png)/.test( $this.attr( 'src' ) )
 				&& !$this.hasClass( 'tool-button' );
 		} )
@@ -163,9 +164,9 @@
 			'p-cactions', '#', 'Verificar imagens sem atribuição', 'ca-check-imgs',
 			'Gera uma lista de imagens sem link para a página de descrição'
 		) )
-		.click( function (e) {
+		.click( function ( e ) {
 			e.preventDefault();
-			mw.loader.using( ['mediawiki.api', 'jquery.spinner'], getImagesWithoutLinkToDescription );
+			mw.loader.using( [ 'mediawiki.api', 'jquery.spinner' ], getImagesWithoutLinkToDescription );
 		} );
 	}
 
