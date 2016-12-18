@@ -106,7 +106,7 @@
 			return !( href && href.indexOf( mw.util.getUrl( mw.config.get( 'wgFormattedNamespaces' )[ 6 ] + ':' ) ) === 0 )
 				&& !( href && href.indexOf( '//commons.wikimedia.org/wiki/File:' ) === 0 )
 				&& !( href && href.indexOf( '//commons.wikimedia.org/w/index.php?title=File:' ) === 0 )
-				&& !/\/(?:OggHandler|timeline|(?:magnify-clip|fileicon-ogg)\.png)|data:image/.test( $this.attr( 'src' ) )
+				&& !/\/(?:OggHandler|timeline|(?:magnify-clip|fileicon-ogg)\.png)|data:image|media\/math\/render\//.test( $this.attr( 'src' ) )
 				&& !$this.hasClass( 'tool-button' );
 		} )
 		.each( function () {
